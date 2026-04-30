@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 # Project N.O.M.A.D. — Native Termux Stop Script
-# Gracefully stops the Command Center, Redis, and MariaDB.
+# Gracefully stops the Command Center, Redis, and queue workers.
 #
 # Usage:
 #   bash install/stop_termux.sh
@@ -67,7 +67,6 @@ info "Stopping N.O.M.A.D. services..."
 stop_pid "Command Center"  "${NOMAD_RUN}/nomad.pid"
 stop_pid "Queue Workers"   "${NOMAD_RUN}/nomad_worker.pid"
 stop_pid "Redis"           "${NOMAD_RUN}/redis.pid"
-stop_pid "MariaDB"         "${NOMAD_RUN}/mariadb.pid"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 

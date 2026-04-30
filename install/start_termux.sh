@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 # Project N.O.M.A.D. — Native Termux Start Script
-# Starts MariaDB, Redis, and the Command Center as background processes.
+# Starts Redis and the Command Center as background processes.
 #
 # Usage:
 #   bash install/start_termux.sh
@@ -48,34 +48,6 @@ is_running() {
     fi
     return 1
 }
-
-# ── Start MariaDB ────────────────────────────────────────────────────────────
-
-if is_running "${NOMAD_RUN}/mariadb.pid"; then
-    info "MariaDB is already running (PID $(<"${NOMAD_RUN}/mariadb.pid"))."
-else
-    info "Starting MariaDB..."
-    mariadbd \
-        --datadir="${NOMAD_HOME}/mysql" \
-        --socket="${NOMAD_RUN}/mysql.sock" \
-        --pid-file="${NOMAD_RUN}/mariadb.pid" \
-        --port=3306 \
-        --bind-address=127.0.0.1 \
-        --log-error="${NOMAD_LOGS}/mariadb.log" \
-        --skip-networking=OFF \
-        --daemonize
-
-    for i in $(seq 1 30); do
-        if mysqladmin ping --socket="${NOMAD_RUN}/mysql.sock" --silent 2>/dev/null; then
-            break
-        fi
-        sleep 1
-        if [[ $i -eq 30 ]]; then
-            error "MariaDB did not start. Check ${NOMAD_LOGS}/mariadb.log"
-        fi
-    done
-    info "MariaDB started."
-fi
 
 # ── Start Redis ───────────────────────────────────────────────────────────────
 

@@ -110,12 +110,11 @@ Open Termux and run the following commands to update your environment and instal
 
 ```bash
 pkg update && pkg upgrade -y
-pkg install -y git nodejs mariadb redis curl wget
+pkg install -y git nodejs redis curl wget
 ```
 
 > **Dependency notes:**
 > - `nodejs` — runs the AdonisJS Command Center backend
-> - `mariadb` — drop-in replacement for MySQL (fully compatible with N.O.M.A.D.'s database layer)
 > - `redis` — in-memory store used for caching, background jobs, and queues
 > - `git` — required to clone this repository
 > - `curl` / `wget` — used by helper scripts
@@ -135,14 +134,12 @@ bash install/setup_termux.sh
 
 The setup script will:
 
-1. Initialize and start the MariaDB (MySQL-compatible) database
-2. Start the Redis server
-3. Create the N.O.M.A.D. database and user
-4. Install Node.js dependencies (`npm ci --omit=dev`)
-5. Run database migrations and seed initial data
-6. Write a `~/.nomad_env` environment file with all required variables
-7. Start the Command Center as a background process
-8. Print the local access URL
+1. Start the Redis server
+2. Install Node.js dependencies (`npm ci --omit=dev`)
+3. Run database migrations and seed initial data (SQLite database file is created automatically)
+4. Write a `~/.nomad_env` environment file with all required variables
+5. Start the Command Center as a background process
+6. Print the local access URL
 
 Once complete, open a browser (e.g. [Firefox for Android](https://www.mozilla.org/en-US/firefox/browsers/mobile/android/)) and navigate to:
 
@@ -163,12 +160,7 @@ All environment variables are stored in `~/.nomad_env` after setup. You can edit
 | `APP_KEY` | *(generated)* | Secret key — must be at least 16 characters |
 | `NODE_ENV` | `production` | Node environment |
 | `LOG_LEVEL` | `info` | Log verbosity (`debug`, `info`, `warn`, `error`) |
-| `DB_HOST` | `127.0.0.1` | Database host (always localhost in Termux) |
-| `DB_PORT` | `3306` | MariaDB port |
-| `DB_USER` | `nomad_user` | Database user |
-| `DB_PASSWORD` | *(generated)* | Database password |
-| `DB_DATABASE` | `nomad` | Database name |
-| `DB_SSL` | `false` | SSL for DB connection |
+| `DB_FILENAME` | `~/nomad/data/nomad.db` | Path to the SQLite database file |
 | `REDIS_HOST` | `127.0.0.1` | Redis host (always localhost in Termux) |
 | `REDIS_PORT` | `6379` | Redis port |
 | `NOMAD_STORAGE_PATH` | `~/nomad/data` | Storage path for ZIM files, maps, uploads, etc. |
@@ -191,7 +183,7 @@ bash ~/nomad-termux/install/start_termux.sh
 bash ~/nomad-termux/install/start_termux.sh
 ```
 
-This starts MariaDB, Redis, and the Command Center as background processes. PIDs are written to `~/nomad/run/` for tracking.
+This starts Redis and the Command Center as background processes. PIDs are written to `~/nomad/run/` for tracking.
 
 #### Stop all services
 
@@ -199,7 +191,7 @@ This starts MariaDB, Redis, and the Command Center as background processes. PIDs
 bash ~/nomad-termux/install/stop_termux.sh
 ```
 
-This gracefully stops the Command Center, Redis, and MariaDB in order.
+This gracefully stops the Command Center, Redis, and the queue workers in order.
 
 #### Check running status
 
@@ -220,7 +212,6 @@ Since `docker logs` is no longer applicable, logs are written to plain text file
 | Command Center (stderr) | `~/nomad/data/logs/nomad_err.log` |
 | Queue Workers (stdout) | `~/nomad/data/logs/nomad.log` (shared with Command Center) |
 | Queue Workers (stderr) | `~/nomad/data/logs/nomad_err.log` (shared with Command Center) |
-| MariaDB | `~/nomad/data/logs/mariadb.log` |
 | Redis | `~/nomad/data/logs/redis.log` |
 
 #### Tail the live Command Center log
@@ -234,7 +225,6 @@ tail -f ~/nomad/data/logs/nomad.log
 ```bash
 tail -n 100 ~/nomad/data/logs/nomad.log \
              ~/nomad/data/logs/nomad_err.log \
-             ~/nomad/data/logs/mariadb.log \
              ~/nomad/data/logs/redis.log
 ```
 
@@ -246,8 +236,8 @@ All helper scripts are located in `~/nomad-termux/install/`.
 
 | Script | Purpose |
 |---|---|
-| `setup_termux.sh` | First-time setup — installs dependencies, configures DB, starts all services |
-| `start_termux.sh` | Start MariaDB, Redis, and the Command Center |
+| `setup_termux.sh` | First-time setup — installs dependencies, configures SQLite DB, starts all services |
+| `start_termux.sh` | Start Redis and the Command Center |
 | `stop_termux.sh` | Gracefully stop all N.O.M.A.D. services |
 
 ```bash
@@ -272,11 +262,11 @@ The table below summarises how Docker concepts map to native Termux equivalents 
 | Docker Concept | Native Termux Equivalent |
 |---|---|
 | `FROM node:22-slim` | `pkg install nodejs` |
-| `FROM mysql:8.0` | `pkg install mariadb` |
+| `FROM mysql:8.0` | SQLite file at `~/nomad/data/nomad.db` (no daemon) |
 | `FROM redis:7-alpine` | `pkg install redis` |
 | `docker-compose up -d` | `bash install/setup_termux.sh` |
 | `docker logs nomad_admin` | `tail -f ~/nomad/data/logs/nomad.log` |
-| `http://db:5432` (container link) | `http://127.0.0.1:3306` (localhost) |
+| `http://db:5432` (container link) | Not applicable — SQLite is file-based |
 | `/opt/project-nomad/storage` (bind-mount) | `~/nomad/data` (Termux home directory) |
 | `.env` passed to container | `~/.nomad_env` sourced in shell / `start_termux.sh` |
 | `ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]` | `install/start_termux.sh` |

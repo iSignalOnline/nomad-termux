@@ -45,7 +45,7 @@ See the [Device Requirements](README.md#device-requirements) section of the READ
 |---|---|
 | Backend | Node.js / TypeScript ([AdonisJS](https://adonisjs.com/)) |
 | Frontend | React + [Vite](https://vitejs.dev/) + [Inertia.js](https://inertiajs.com/) |
-| Database | MariaDB (MySQL-compatible, installed via `pkg install mariadb`) |
+| Database | SQLite (file-based, installed automatically — no daemon required) |
 | Cache / Queues | Redis (installed via `pkg install redis`) |
 | Runtime | Native Termux processes (no Docker) |
 
@@ -91,7 +91,6 @@ tail -f ~/nomad/data/logs/nomad.log
 # All logs
 tail -n 100 ~/nomad/data/logs/nomad.log \
              ~/nomad/data/logs/nomad_err.log \
-             ~/nomad/data/logs/mariadb.log \
              ~/nomad/data/logs/redis.log
 ```
 

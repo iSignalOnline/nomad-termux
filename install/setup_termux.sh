@@ -34,9 +34,9 @@ if [[ -z "${TERMUX_VERSION}" ]]; then
     warn "Continuing anyway — some paths may differ on other platforms."
 fi
 
-for cmd in node npm mariadbd redis-server; do
+for cmd in node npm redis-server; do
     if ! command -v "$cmd" &>/dev/null; then
-        error "Required command '${cmd}' not found. Run: pkg install nodejs mariadb redis"
+        error "Required command '${cmd}' not found. Run: pkg install nodejs redis"
     fi
 done
 
@@ -46,7 +46,6 @@ info "Creating N.O.M.A.D. directories..."
 mkdir -p "${NOMAD_DATA}/logs" \
          "${NOMAD_DATA}/kb_uploads" \
          "${NOMAD_RUN}" \
-         "${NOMAD_HOME}/mysql" \
          "${NOMAD_HOME}/redis"
 
 # ── Generate secrets ─────────────────────────────────────────────────────────
@@ -57,7 +56,6 @@ generate_secret() {
 }
 
 APP_KEY=$(generate_secret)
-DB_PASSWORD=$(generate_secret)
 
 # ── Write environment file ───────────────────────────────────────────────────
 
@@ -75,13 +73,7 @@ export APP_KEY=${APP_KEY}
 export NODE_ENV=production
 export SESSION_DRIVER=cookie
 
-export DB_HOST=127.0.0.1
-export DB_PORT=3306
-export DB_USER=nomad_user
-export DB_PASSWORD=${DB_PASSWORD}
-export DB_DATABASE=nomad
-export DB_NAME=nomad
-export DB_SSL=false
+export DB_FILENAME=${NOMAD_DATA}/nomad.db
 
 export REDIS_HOST=127.0.0.1
 export REDIS_PORT=6379
@@ -92,55 +84,6 @@ EOF
 
 chmod 600 "${NOMAD_ENV}"
 info "Environment file written."
-
-# ── Initialise MariaDB data directory ────────────────────────────────────────
-
-MYSQL_DATADIR="${NOMAD_HOME}/mysql"
-
-if [[ ! -f "${MYSQL_DATADIR}/ibdata1" ]]; then
-    info "Initialising MariaDB data directory..."
-    mysql_install_db \
-        --datadir="${MYSQL_DATADIR}" \
-        --basedir="${PREFIX}" \
-        --auth-root-authentication-method=normal \
-        2>&1 | tee "${NOMAD_LOGS}/mariadb_init.log"
-fi
-
-# ── Start MariaDB ────────────────────────────────────────────────────────────
-
-info "Starting MariaDB..."
-mariadbd \
-    --datadir="${MYSQL_DATADIR}" \
-    --socket="${NOMAD_RUN}/mysql.sock" \
-    --pid-file="${NOMAD_RUN}/mariadb.pid" \
-    --port=3306 \
-    --bind-address=127.0.0.1 \
-    --log-error="${NOMAD_LOGS}/mariadb.log" \
-    --skip-networking=OFF \
-    --daemonize
-
-# Wait for MariaDB to be ready
-info "Waiting for MariaDB to be ready..."
-for i in $(seq 1 30); do
-    if mysqladmin ping --socket="${NOMAD_RUN}/mysql.sock" --silent 2>/dev/null; then
-        break
-    fi
-    sleep 1
-    if [[ $i -eq 30 ]]; then
-        error "MariaDB did not start within 30 seconds. Check ${NOMAD_LOGS}/mariadb.log"
-    fi
-done
-info "MariaDB is ready."
-
-# ── Create database and user ─────────────────────────────────────────────────
-
-info "Creating database 'nomad' and user 'nomad_user'..."
-mysql --socket="${NOMAD_RUN}/mysql.sock" -u root <<SQL
-CREATE DATABASE IF NOT EXISTS nomad CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER IF NOT EXISTS 'nomad_user'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';
-GRANT ALL PRIVILEGES ON nomad.* TO 'nomad_user'@'127.0.0.1';
-FLUSH PRIVILEGES;
-SQL
 
 # ── Start Redis ───────────────────────────────────────────────────────────────
 
