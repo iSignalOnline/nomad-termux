@@ -1,158 +1,313 @@
 <div align="center">
 <img src="admin/public/project_nomad_logo.webp" width="200" height="200"/>
 
-# Project N.O.M.A.D.
+# Project N.O.M.A.D. — Native Termux Fork
 ### Node for Offline Media, Archives, and Data
 
-**Knowledge That Never Goes Offline**
+**Lightweight · No Root · Native Performance**
 
-[![Website](https://img.shields.io/badge/Website-projectnomad.us-blue)](https://www.projectnomad.us)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2)](https://discord.com/invite/crosstalksolutions)
-[![Benchmark](https://img.shields.io/badge/Benchmark-Leaderboard-green)](https://benchmark.projectnomad.us)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
 </div>
 
 ---
 
-Project N.O.M.A.D. is a self-contained, offline-first knowledge and education server packed with critical tools, knowledge, and AI to keep you informed and empowered—anytime, anywhere.
+> **This is the Native Termux fork of Project N.O.M.A.D.**
+> This fork has been **de-containerized**. All services that previously ran in Docker now run as **native background processes within the Termux environment**. No root access, no custom kernels, and no Docker containers are required.
 
-## Installation & Quickstart
-Project N.O.M.A.D. can be installed on any Debian-based operating system (we recommend Ubuntu). Installation is completely terminal-based, and all tools and resources are designed to be accessed through the browser, so there's no need for a desktop environment if you'd rather setup N.O.M.A.D. as a "server" and access it through other clients.
+Project N.O.M.A.D. (Native Termux Fork) is a self-contained, offline-first knowledge and education server that runs **directly on Android** via [Termux](https://termux.dev/). It brings critical tools, knowledge, and AI to your pocket — anytime, anywhere, without modifying your device.
 
-*Note: sudo/root privileges are required to run the install script*
+---
 
-### Quick Install (Debian-based OS Only)
-```bash
-sudo apt-get update && \
-sudo apt-get install -y curl && \
-curl -fsSL https://raw.githubusercontent.com/Crosstalk-Solutions/project-nomad/refs/heads/main/install/install_nomad.sh \
-  -o install_nomad.sh && \
-sudo bash install_nomad.sh
-```
+## Table of Contents
 
-Project N.O.M.A.D. is now installed on your device! Open a browser and navigate to `http://localhost:8080` (or `http://DEVICE_IP:8080`) to start exploring!
+1. [How It Works](#how-it-works)
+2. [What's Included](#whats-included)
+3. [Device Requirements](#device-requirements)
+4. [Installation & Quickstart](#installation--quickstart)
+   - [Core Prerequisites](#core-prerequisites)
+   - [Setup Script](#setup-script)
+5. [Configuration](#configuration)
+6. [Usage — Starting & Stopping N.O.M.A.D.](#usage--starting--stopping-nomad)
+7. [Viewing Logs](#viewing-logs)
+8. [Helper Scripts](#helper-scripts)
+9. [About Docker Migration](#about-docker-migration)
+10. [About Internet Usage & Privacy](#about-internet-usage--privacy)
+11. [About Security](#about-security)
+12. [Contributing](#contributing)
+13. [Community & Resources](#community--resources)
+14. [License](#license)
 
-For a complete step-by-step walkthrough (including Ubuntu installation), see the [Installation Guide](https://www.projectnomad.us/install).
-
-### Advanced Installation
-For more control over the installation process, copy and paste the [Docker Compose template](https://raw.githubusercontent.com/Crosstalk-Solutions/project-nomad/refs/heads/main/install/management_compose.yaml) into a `docker-compose.yml` file and customize it to your liking (be sure to replace any placeholders with your actual values). Then, run `docker compose up -d` to start the Command Center and its dependencies. Note: this method is recommended for advanced users only, as it requires familiarity with Docker and manual configuration before starting.
+---
 
 ## How It Works
-N.O.M.A.D. is a management UI ("Command Center") and API that orchestrates a collection of containerized tools and resources via [Docker](https://www.docker.com/). It handles installation, configuration, and updates for everything — so you don't have to.
+
+N.O.M.A.D. is a management UI ("Command Center") and API that orchestrates a collection of tools and resources running as **native Termux processes**. It handles installation, configuration, and data management — so you don't have to.
 
 **Built-in capabilities include:**
-- **AI Chat with Knowledge Base** — local AI chat powered by [Ollama](https://ollama.com/) or you can use OpenAI API compatible software such as LM Studio or llama.cpp, with document upload and semantic search (RAG via [Qdrant](https://qdrant.tech/))
+
+- **AI Chat with Knowledge Base** — local AI chat powered by [Ollama](https://ollama.com/) (or any OpenAI-compatible API such as LM Studio / llama.cpp), with document upload and semantic search (RAG via [Qdrant](https://qdrant.tech/))
 - **Information Library** — offline Wikipedia, medical references, ebooks, and more via [Kiwix](https://kiwix.org/)
 - **Education Platform** — Khan Academy courses with progress tracking via [Kolibri](https://learningequality.org/kolibri/)
 - **Offline Maps** — downloadable regional maps via [ProtoMaps](https://protomaps.com)
 - **Data Tools** — encryption, encoding, and analysis via [CyberChef](https://gchq.github.io/CyberChef/)
 - **Notes** — local note-taking via [FlatNotes](https://github.com/dullage/flatnotes)
-- **System Benchmark** — hardware scoring with a [community leaderboard](https://benchmark.projectnomad.us)
 - **Easy Setup Wizard** — guided first-time configuration with curated content collections
 
 N.O.M.A.D. also includes built-in tools like a Wikipedia content selector, ZIM library manager, and content explorer.
 
+---
+
 ## What's Included
 
 | Capability | Powered By | What You Get |
-|-----------|-----------|-------------|
+|---|---|---|
 | Information Library | Kiwix | Offline Wikipedia, medical references, survival guides, ebooks |
 | AI Assistant | Ollama + Qdrant | Built-in chat with document upload and semantic search |
 | Education Platform | Kolibri | Khan Academy courses, progress tracking, multi-user support |
 | Offline Maps | ProtoMaps | Downloadable regional maps with search and navigation |
 | Data Tools | CyberChef | Encryption, encoding, hashing, and data analysis |
 | Notes | FlatNotes | Local note-taking with markdown support |
-| System Benchmark | Built-in | Hardware scoring, Builder Tags, and community leaderboard |
+
+---
 
 ## Device Requirements
-While many similar offline survival computers are designed to be run on bare-minimum, lightweight hardware, Project N.O.M.A.D. is quite the opposite. To install and run the
-available AI tools, we highly encourage the use of a beefy, GPU-backed device to make the most of your install.
 
-At it's core, however, N.O.M.A.D. is still very lightweight. For a barebones installation of the management application itself, the following minimal specs are required:
+This Termux fork is intentionally lightweight and designed to run on everyday Android hardware.
 
-*Note: Project N.O.M.A.D. is not sponsored by any hardware manufacturer and is designed to be as hardware-agnostic as possible. The harware listed below is for example/comparison use only*
+*Note: This fork is not sponsored by any hardware manufacturer. Hardware listed below is for reference only.*
 
-#### Minimum Specs
-- Processor: 2 GHz dual-core processor or better
-- RAM: 4GB system memory
-- Storage: At least 5 GB free disk space
-- OS: Debian-based (Ubuntu recommended)
-- Stable internet connection (required during install only)
+#### Minimum Specs (Command Center only)
 
-To run LLM's and other included AI tools:
+| Component | Requirement |
+|---|---|
+| Android version | 7.0 (Nougat) or later |
+| Architecture | arm64-v8a (64-bit ARM) |
+| RAM | 2 GB |
+| Free Storage | 2 GB |
+| Internet | Required during install only |
 
-#### Optimal Specs
-- Processor: AMD Ryzen 7 or Intel Core i7 or better
-- RAM: 32 GB system memory
-- Graphics: NVIDIA RTX 3060 or AMD equivalent or better (more VRAM = run larger models)
-- Storage: At least 250 GB free disk space (preferably on SSD)
-- OS: Debian-based (Ubuntu recommended)
-- Stable internet connection (required during install only)
+#### Recommended Specs (with AI tools)
 
-**For detailed build recommendations at three price points ($150–$1,000+), see the [Hardware Guide](https://www.projectnomad.us/hardware).**
+| Component | Recommendation |
+|---|---|
+| Android version | 11 or later |
+| RAM | 6 GB or more |
+| Free Storage | 16 GB or more (for ZIM files, models, maps) |
+| CPU | Snapdragon 778G / Dimensity 900 class or better |
+| Internet | Required during install only |
 
-Again, Project N.O.M.A.D. itself is quite lightweight - it's the tools and resources you choose to install with N.O.M.A.D. that will determine the specs required for your unique deployment
+> AI model performance is limited by device RAM on Android. Large models (7B+) may be slow or unavailable. llama.cpp-based backends running on CPU are the practical option here.
 
-#### Running AI models on a different host
-By default, N.O.M.A.D.'s installer will attempt to setup Ollama on the host when the AI Assistant is installed. However, if you would like to run the AI model on a different host, you can go to the settings of of the AI assistant and input a URL for either an ollama or OpenAI-compatible API server (such as LM Studio).  
-Note that if you use Ollama on a different host, you must start the server with this option `OLLAMA_HOST=0.0.0.0`.  
-Ollama is the preferred way to use the AI assistant as it has features such as model download that OpenAI API does not support. So when using LM Studio for example, you will have to use LM Studio to download models.
-You are responsible for the setup of Ollama/OpenAI server on the other host.
+---
 
-## Frequently Asked Questions (FAQ)
-For answers to common questions about Project N.O.M.A.D., please see our [FAQ](FAQ.md) page.
+## Installation & Quickstart
+
+### Core Prerequisites
+
+Open Termux and run the following commands to update your environment and install all required native dependencies:
+
+```bash
+pkg update && pkg upgrade -y
+pkg install -y git nodejs redis curl wget
+```
+
+> **Dependency notes:**
+> - `nodejs` — runs the AdonisJS Command Center backend
+> - `redis` — in-memory store used for caching, background jobs, and queues
+> - `git` — required to clone this repository
+> - `curl` / `wget` — used by helper scripts
+
+### Setup Script
+
+Clone this repository and run the native setup script. This replaces the old `docker-compose up` workflow entirely:
+
+```bash
+# Clone the repository
+git clone https://github.com/iSignalOnline/nomad-termux.git
+cd nomad-termux
+
+# Run the native Termux setup script
+bash install/setup_termux.sh
+```
+
+The setup script will:
+
+1. Start the Redis server
+2. Install Node.js dependencies (`npm ci --omit=dev`)
+3. Run database migrations and seed initial data (SQLite database file is created automatically)
+4. Write a `~/.nomad_env` environment file with all required variables
+5. Start the Command Center as a background process
+6. Print the local access URL
+
+Once complete, open a browser (e.g. [Firefox for Android](https://www.mozilla.org/en-US/firefox/browsers/mobile/android/)) and navigate to:
+
+```
+http://127.0.0.1:8080
+```
+
+---
+
+## Configuration
+
+All environment variables are stored in `~/.nomad_env` after setup. You can edit this file at any time and then restart N.O.M.A.D. for changes to take effect.
+
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` | `8080` | Port the Command Center listens on |
+| `HOST` | `0.0.0.0` | Listen address (use `127.0.0.1` to restrict to localhost) |
+| `APP_KEY` | *(generated)* | Secret key — must be at least 16 characters |
+| `NODE_ENV` | `production` | Node environment |
+| `LOG_LEVEL` | `info` | Log verbosity (`debug`, `info`, `warn`, `error`) |
+| `DB_FILENAME` | `~/nomad/data/nomad.db` | Path to the SQLite database file |
+| `REDIS_HOST` | `127.0.0.1` | Redis host (always localhost in Termux) |
+| `REDIS_PORT` | `6379` | Redis port |
+| `NOMAD_STORAGE_PATH` | `~/nomad/data` | Storage path for ZIM files, maps, uploads, etc. |
+
+To apply changes manually (without using the helper scripts):
+
+```bash
+# Source the env file and restart
+source ~/.nomad_env
+bash ~/nomad-termux/install/start_termux.sh
+```
+
+---
+
+## Usage — Starting & Stopping N.O.M.A.D.
+
+#### Start all services
+
+```bash
+bash ~/nomad-termux/install/start_termux.sh
+```
+
+This starts Redis and the Command Center as background processes. PIDs are written to `~/nomad/run/` for tracking.
+
+#### Stop all services
+
+```bash
+bash ~/nomad-termux/install/stop_termux.sh
+```
+
+This gracefully stops the Command Center, Redis, and the queue workers in order.
+
+#### Check running status
+
+```bash
+# Check if the Command Center is running
+cat ~/nomad/run/nomad.pid | xargs ps -p
+```
+
+---
+
+## Viewing Logs
+
+Since `docker logs` is no longer applicable, logs are written to plain text files in the storage directory.
+
+| Service | Log Location |
+|---|---|
+| Command Center (stdout) | `~/nomad/data/logs/nomad.log` |
+| Command Center (stderr) | `~/nomad/data/logs/nomad_err.log` |
+| Queue Workers (stdout) | `~/nomad/data/logs/nomad.log` (shared with Command Center) |
+| Queue Workers (stderr) | `~/nomad/data/logs/nomad_err.log` (shared with Command Center) |
+| Redis | `~/nomad/data/logs/redis.log` |
+
+#### Tail the live Command Center log
+
+```bash
+tail -f ~/nomad/data/logs/nomad.log
+```
+
+#### View the last 100 lines of all logs at once
+
+```bash
+tail -n 100 ~/nomad/data/logs/nomad.log \
+             ~/nomad/data/logs/nomad_err.log \
+             ~/nomad/data/logs/redis.log
+```
+
+---
+
+## Helper Scripts
+
+All helper scripts are located in `~/nomad-termux/install/`.
+
+| Script | Purpose |
+|---|---|
+| `setup_termux.sh` | First-time setup — installs dependencies, configures SQLite DB, starts all services |
+| `start_termux.sh` | Start Redis and the Command Center |
+| `stop_termux.sh` | Gracefully stop all N.O.M.A.D. services |
+
+```bash
+# First-time setup
+bash ~/nomad-termux/install/setup_termux.sh
+
+# Start
+bash ~/nomad-termux/install/start_termux.sh
+
+# Stop
+bash ~/nomad-termux/install/stop_termux.sh
+```
+
+---
+
+## About Docker Migration
+
+This fork has been **de-containerized**. All services that previously ran in Docker now run as **native background processes within the Termux environment**.
+
+The table below summarises how Docker concepts map to native Termux equivalents in this fork:
+
+| Docker Concept | Native Termux Equivalent |
+|---|---|
+| `FROM node:22-slim` | `pkg install nodejs` |
+| `FROM mysql:8.0` | SQLite file at `~/nomad/data/nomad.db` (no daemon) |
+| `FROM redis:7-alpine` | `pkg install redis` |
+| `docker-compose up -d` | `bash install/setup_termux.sh` |
+| `docker logs nomad_admin` | `tail -f ~/nomad/data/logs/nomad.log` |
+| `http://db:5432` (container link) | Not applicable — SQLite is file-based |
+| `/opt/project-nomad/storage` (bind-mount) | `~/nomad/data` (Termux home directory) |
+| `.env` passed to container | `~/.nomad_env` sourced in shell / `start_termux.sh` |
+| `ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]` | `install/start_termux.sh` |
+| `/var/run/docker.sock` (DooD) | Not applicable — no Docker daemon required |
+
+No root access, no kernel modifications, and no container runtime are needed.
+
+---
 
 ## About Internet Usage & Privacy
-Project N.O.M.A.D. is designed for offline usage. An internet connection is only required during the initial installation (to download dependencies) and if you (the user) decide to download additional tools and resources at a later time. Otherwise, N.O.M.A.D. does not require an internet connection and has ZERO built-in telemetry.
 
-To test internet connectivity, N.O.M.A.D. attempts to make a request to Cloudflare's utility endpoint, `https://1.1.1.1/cdn-cgi/trace` and checks for a successful response.
+Project N.O.M.A.D. is designed for offline usage. An internet connection is only required during the initial installation (to download Termux packages and clone this repository) and if you choose to download additional tools or content at a later time. Otherwise, N.O.M.A.D. does not require an internet connection and has **zero built-in telemetry**.
+
+To test internet connectivity, N.O.M.A.D. attempts to make a request to Cloudflare's utility endpoint, `https://1.1.1.1/cdn-cgi/trace`, and checks for a successful response.
+
+---
 
 ## About Security
-By design, Project N.O.M.A.D. is intended to be open and available without hurdles - it includes no authentication. If you decide to connect your device to a local network after install (e.g. for allowing other devices to access it's resources), you can block/open ports to control which services are exposed.
 
-**Will authentication be added in the future?** Maybe. It's not currently a priority, but if there's enough demand for it, we may consider building in an optional authentication layer in a future release to support uses cases where multiple users need access to the same instance but with different permission levels (e.g. family use with parental controls, classroom use with teacher/admin accounts, etc.). We have a suggestion for this on our public roadmap, so if this is something you'd like to see, please upvote it here: https://roadmap.projectnomad.us/posts/1/user-authentication-please-build-in-user-auth-with-admin-user-roles
+By design, Project N.O.M.A.D. is intended to be open and accessible without hurdles — it includes no authentication. If you connect your Android device to a local network after install (e.g. to allow other devices to access its resources), be aware that any device on that network may be able to reach the Command Center on port `8080`.
 
-For now, we recommend using network-level controls to manage access if you're planning to expose your N.O.M.A.D. instance to other devices on a local network. N.O.M.A.D. is not designed to be exposed directly to the internet, and we strongly advise against doing so unless you really know what you're doing, have taken appropriate security measures, and understand the risks involved.
+To restrict access to localhost only, set `HOST=127.0.0.1` in `~/.nomad_env` and restart N.O.M.A.D.
+
+N.O.M.A.D. is **not** designed to be exposed directly to the internet, and we strongly advise against doing so.
+
+---
 
 ## Contributing
-Contributions are welcome and appreciated! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to the project.
+
+Contributions are welcome and appreciated! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+
+---
 
 ## Community & Resources
 
-- **Website:** [www.projectnomad.us](https://www.projectnomad.us) - Learn more about the project
-- **Discord:** [Join the Community](https://discord.com/invite/crosstalksolutions) - Get help, share your builds, and connect with other NOMAD users
-- **Benchmark Leaderboard:** [benchmark.projectnomad.us](https://benchmark.projectnomad.us) - See how your hardware stacks up against other NOMAD builds
-- **Troubleshooting Guide:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Find solutions to common issues
-- **FAQ:** [FAQ.md](FAQ.md) - Find answers to frequently asked questions
-- **Community Add-Ons:** [admin/docs/community-add-ons.md](admin/docs/community-add-ons.md) - Third-party content packs built by the community
+- **Discord:** [Join the Community](https://discord.com/invite/crosstalksolutions) — Get help, share your builds, and connect with other N.O.M.A.D. users
+- **FAQ:** [FAQ.md](FAQ.md) — Answers to frequently asked questions
+- **Original Project:** [Crosstalk-Solutions/project-nomad](https://github.com/Crosstalk-Solutions/project-nomad) — The upstream Docker-based release
+
+---
 
 ## License
 
 Project N.O.M.A.D. is licensed under the [Apache License 2.0](LICENSE).
-
-## Helper Scripts
-Once installed, Project N.O.M.A.D. has a few helper scripts should you ever need to troubleshoot issues or perform maintenance that can't be done through the Command Center. All of these scripts are found in Project N.O.M.A.D.'s install directory, `/opt/project-nomad`
-
-###
-
-###### Start Script - Starts all installed project containers
-```bash
-sudo bash /opt/project-nomad/start_nomad.sh
-```
-###
-
-###### Stop Script - Stops all installed project containers
-```bash
-sudo bash /opt/project-nomad/stop_nomad.sh
-```
-###
-
-###### Update Script - Attempts to pull the latest images for the Command Center and its dependencies (i.e. mysql) and recreate the containers. Note: this *only* updates the Command Center containers. It does not update the installable application containers - that should be done through the Command Center UI
-```bash
-sudo bash /opt/project-nomad/update_nomad.sh
-```
-
-###### Uninstall Script - Need to start fresh? Use the uninstall script to make your life easy. Note: this cannot be undone!
-```bash
-curl -fsSL https://raw.githubusercontent.com/Crosstalk-Solutions/project-nomad/refs/heads/main/install/uninstall_nomad.sh -o uninstall_nomad.sh && sudo bash uninstall_nomad.sh
-```
