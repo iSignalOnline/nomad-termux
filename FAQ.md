@@ -1,77 +1,99 @@
-# Frequently Asked Questions (FAQ)
+# Frequently Asked Questions (FAQ) — Native Termux Fork
 
-Find answers to some of the most common questions about Project N.O.M.A.D.
+Find answers to some of the most common questions about Project N.O.M.A.D. (Native Termux Fork).
+
+> This is the **de-containerized** Termux fork of Project N.O.M.A.D. — all services run natively inside Termux. Docker is not required. For the original Docker-based upstream project, see [Crosstalk-Solutions/project-nomad](https://github.com/Crosstalk-Solutions/project-nomad).
+
+## Does this fork require root or a custom kernel?
+
+No. This fork is specifically designed to run without root access, without custom kernels, and without any Docker containers. Everything runs as native background processes inside Termux.
 
 ## Can I customize the port(s) that NOMAD uses?
 
-Yes, you can customize the ports that NOMAD's core services (Command Center, MySQL, Redis) use. Please refer to the [Advanced Installation](README.md#advanced-installation) section of the README for more details on how to do this.
+Yes. Edit `~/.nomad_env` and change the `PORT` variable, then restart:
 
-Note: As of 3/24/2026, only the core services defined in the `docker-compose.yml` file currently support port customization - the installable applications (e.g. Ollama, Kiwix, etc.) do not yet support this, but we have multiple PR's in the works to add this feature for all installable applications in a future release.
+```bash
+# In ~/.nomad_env
+export PORT=9090
+
+# Then restart
+bash ~/nomad-termux/install/stop_termux.sh
+bash ~/nomad-termux/install/start_termux.sh
+```
 
 ## Can I customize the storage location for NOMAD's data?
 
-Yes, you can customize the storage location for NOMAD's content by modifying the `docker-compose.yml` file to adjust the appropriate bind mounts to point to your desired storage location on your host machine. Please refer to the [Advanced Installation](README.md#advanced-installation) section of the README for more details on how to do this.
+Yes. Edit the `NOMAD_STORAGE_PATH` variable in `~/.nomad_env` before running `setup_termux.sh`, or after setup by stopping all services, moving the data directory, updating the variable, and restarting.
 
-## Can I store NOMAD's data on an external drive or network storage?
+The default path is `~/nomad/data` (`/data/data/com.termux/files/home/nomad/data`).
 
-Short answer: yes, but we can't do it for you (and we recommend a local drive for best performance).
+## Can I store NOMAD's data on external storage?
 
-Long answer: Custom storage paths, mount points, and external drives (like iSCSI or SMB/NFS volumes) **are possible**, but this will be up to your individual configuration on the host before NOMAD starts, and then passed in via the compose.yml as this is a *host-level concern*, not a NOMAD-level concern (see above for details). NOMAD itself can't configure this for you, nor could we support all possible configurations in the install script.
+Android's external storage (SD card / USB OTG) can be mounted and referenced via `NOMAD_STORAGE_PATH` in `~/.nomad_env`, but this depends on your device's storage permissions and Android version. On Android 11+, scoped storage restrictions may limit write access to external volumes. Internal Termux home storage is the most reliable option.
 
-## Can I run NOMAD on MAC, WSL2, or a non-Debian-based Distro?
+## What platform does this fork run on?
 
-See [Why does NOMAD require a Debian-based OS?](#why-does-nomad-require-a-debian-based-os)
+This fork runs on **Android** via [Termux](https://termux.dev/). It has been tested on arm64-v8a (64-bit ARM) devices, which covers the vast majority of modern Android phones.
 
-## Why does NOMAD require a Debian-based OS?
+## What are the hardware requirements?
 
-Project N.O.M.A.D. is currently designed to run on Debian-based Linux distributions (with Ubuntu being the recommended distro) because our installation scripts and Docker configurations are optimized for this environment. While it's technically possible to run the Docker containers on other operating systems that support Docker, we have not tested or optimized the installation process for non-Debian-based systems, so we cannot guarantee a smooth experience on those platforms at this time.
+See the [Device Requirements](README.md#device-requirements) section of the README. At minimum: Android 7.0+, 2 GB RAM, 2 GB free storage. For AI features, 6 GB+ RAM and 16 GB+ storage is recommended.
 
-Support for other operating systems will come in the future, but because our development resources are limited as a free and open-source project, we needed to prioritize our efforts and focus on a narrower set of supported platforms for the initial release. We chose Debian-based Linux as our starting point because it's widely used, easy to spin up, and provides a stable environment for running Docker containers.
+## What technologies is this fork built with?
 
-Community members have provided guides for running N.O.M.A.D. on other platforms (e.g. WSL2, Mac, etc.) in our Discord community and [Github Discussions](https://github.com/Crosstalk-Solutions/project-nomad/discussions), so if you're interested in running N.O.M.A.D. on a non-Debian-based system, we recommend checking there for any available resources or guides. However, keep in mind that if you choose to run N.O.M.A.D. on a non-Debian-based system, you may encounter issues that we won't be able to provide support for, and you may need to have a higher level of technical expertise to troubleshoot and resolve any problems that arise.
+| Component | Technology |
+|---|---|
+| Backend | Node.js / TypeScript ([AdonisJS](https://adonisjs.com/)) |
+| Frontend | React + [Vite](https://vitejs.dev/) + [Inertia.js](https://inertiajs.com/) |
+| Database | MariaDB (MySQL-compatible, installed via `pkg install mariadb`) |
+| Cache / Queues | Redis (installed via `pkg install redis`) |
+| Runtime | Native Termux processes (no Docker) |
 
-## Can I run NOMAD on a Raspberry Pi or other ARM-based device?
-Project N.O.M.A.D. is currently designed to run on x86-64 architecture, and we have not yet tested or optimized it for ARM-based devices like the Raspberry Pi (and have not published any official images for ARM architecture).
+This fork does **not** use Docker or the Docker-outside-of-Docker (DooD) pattern. All services run directly as native Termux background processes.
 
-Support for ARM-based devices is on our roadmap, but our initial focus was on x86-64 hardware due to its widespread use and compatibility with a wide range of applications.
+## Does this fork require Docker?
 
-Community members have forked and published their own ARM-compatible images and installation guides for running N.O.M.A.D. on Raspberry Pi and other ARM-based devices in our Discord community and [Github Discussions](https://github.com/Crosstalk-Solutions/project-nomad/discussions), but these are not officially supported by the core development team, and we cannot guarantee their functionality or provide support for any issues that arise when using these community-created resources.
+No. The entire purpose of this fork is to remove the Docker dependency. All services that previously ran in Docker containers now run natively in Termux.
 
-## What are the hardware requirements for running NOMAD?
+## Can I use any AI models?
 
-Project N.O.M.A.D. itself is quite lightweight and can run on even modest x86-64 hardware, but the tools and resources you choose to install with N.O.M.A.D. will determine the specs required for your unique deployment. Please see the [Hardware Guide](https://www.projectnomad.us/hardware) for detailed build recommendations at various price points.
+NOMAD supports any Ollama-compatible or OpenAI API-compatible backend. On Android, the practical option is a llama.cpp-based backend running on CPU since GPU acceleration is generally unavailable through Termux. You can:
+
+- Point the AI Assistant to an Ollama instance running on another machine on your local network.
+- Use a compatible API server (LM Studio, llama.cpp with server mode) on another host.
+- Download and run models locally via Ollama if your device has sufficient RAM (7B+ models require 6–8 GB RAM).
+
+To download a model via the API:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"model":"MODEL_NAME_HERE"}' \
+  http://127.0.0.1:8080/api/ollama/models
+```
+
+## Do I have to install the AI features?
+
+No. The AI features (Ollama, Qdrant, RAG pipeline) are optional and not required to use the core functionality of N.O.M.A.D.
 
 ## Does NOMAD support languages other than English?
 
-As of March 2026, Project N.O.M.A.D.'s UI is only available in English, and the majority of the tools and resources available through N.O.M.A.D. are also primarily in English. However, we have multi-language support on our roadmap for a future release, and we are actively working on adding support for additional languages both in the UI and in the available tools/resources. If you're interested in contributing to this effort, please check out our [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to get involved.
+The UI is currently English-only. Multi-language support is on the upstream project's roadmap.
 
-## What technologies is NOMAD built with?
+## How do I view logs?
 
-Project N.O.M.A.D. is built using a combination of technologies, including:
-- **Docker:** for containerization of the Command Center and its dependencies
-- **Node.js & TypeScript:** for the backend of the Command Center, particularly the [AdonisJS](https://adonisjs.com/) framework
-- **React:** for the frontend of the Command Center, utilizing [Vite](https://vitejs.dev/) and [Inertia.js](https://inertiajs.com/) under the hood
-- **MySQL:** for the Command Center's database
-- **Redis:** for various caching, background jobs, "cron" tasks, and other internal processes within the Command Center
+Since `docker logs` is no longer applicable, all logs are plain text files:
 
-NOMAD makes use of the Docker-outside-of-Docker ("DooD") pattern, which allows the Command Center to manage and orchestrate other Docker containers on the host machine without needing to run Docker itself inside a container. This approach provides better performance and compatibility with a wider range of host environments while still allowing for powerful container management capabilities through the Command Center's UI.
+```bash
+# Live Command Center log
+tail -f ~/nomad/data/logs/nomad.log
 
-## Can I run NOMAD if I have existing Docker containers on my machine?
-Yes, you can safely run Project N.O.M.A.D. on a machine that already has existing Docker containers. NOMAD is designed to coexist with other Docker containers and will not interfere with them as long as there are no port conflicts or resource constraints.
-
-All of NOMAD's containers are prefixed with `nomad_` in their names, so they can be easily identified and managed separately from any other containers you may have running. Just make sure to review the ports that NOMAD's core services (Command Center, MySQL, Redis) use during installation and adjust them if necessary to avoid conflicts with your existing containers.
-
-## Why does NOMAD require access to the Docker socket?
-
-See [What technologies is NOMAD built with?](#what-technologies-is-nomad-built-with)
-
-## Can I use any AI models?
-NOMAD by default uses Ollama inside of a docker container to run LLM Models for the AI Assistant. So if you find a model on HuggingFace for example, you won't be able to use that model in NOMAD. The list of available models in the AI Assistant settings (/settings/models) may not show all of the models you are looking for. If you found a model from https://ollama.com/search that you'd like to try and its not in the settings page, you can use a curl command to download the model.  
-`curl -X POST -H "Content-Type: application/json" -d '{"model":"MODEL_NAME_HERE"}' http://localhost:8080/api/ollama/models` replacing MODEL_NAME_HERE with the model name from whats in the ollama website.
-
-## Do I have to install the AI features in NOMAD?
-
-No, the AI features in NOMAD (Ollama, Qdrant, custom RAG pipeline, etc.) are all optional and not required to use the core functionality of NOMAD.
+# All logs
+tail -n 100 ~/nomad/data/logs/nomad.log \
+             ~/nomad/data/logs/nomad_err.log \
+             ~/nomad/data/logs/mariadb.log \
+             ~/nomad/data/logs/redis.log
+```
 
 ## Is NOMAD actually free? Are there any hidden costs?
 Yes, Project N.O.M.A.D. is completely free and open-source software licensed under the Apache License 2.0. There are no hidden costs or fees associated with using NOMAD itself, and we don't have any plans to introduce "premium" features or paid tiers.
