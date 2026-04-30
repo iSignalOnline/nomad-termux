@@ -85,7 +85,7 @@ else
     info "Starting Redis..."
     redis-server \
         --daemonize yes \
-        --port "${REDIS_PORT}" \
+        --port "${REDIS_PORT:-6379}" \
         --bind 127.0.0.1 \
         --dir "${NOMAD_HOME}/redis" \
         --logfile "${NOMAD_LOGS}/redis.log" \

@@ -218,6 +218,8 @@ Since `docker logs` is no longer applicable, logs are written to plain text file
 |---|---|
 | Command Center (stdout) | `~/nomad/data/logs/nomad.log` |
 | Command Center (stderr) | `~/nomad/data/logs/nomad_err.log` |
+| Queue Workers (stdout) | `~/nomad/data/logs/nomad.log` (shared with Command Center) |
+| Queue Workers (stderr) | `~/nomad/data/logs/nomad_err.log` (shared with Command Center) |
 | MariaDB | `~/nomad/data/logs/mariadb.log` |
 | Redis | `~/nomad/data/logs/redis.log` |
 
